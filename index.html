@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Bosco Begrijpend Lezen (Fictie) - 6e Leerjaar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#6d28d9',
+                            purpleDark: '#5b21b6',
+                            orange: '#f97316',
+                            orangeLight: '#ffedd5',
+                            accent: '#06b6d4',
+                            bgLight: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f1f5f9;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Schrijflijntjes voor de print/A4-modus */
+        .writing-line {
+            border-bottom: 1px dashed #94a3b8;
+            height: 1.6rem;
+            width: 100%;
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        /* CSS Styling speciaal voor A4 afdrukken */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm 10mm 12mm 10mm;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 10.5pt;
+                line-height: 1.35;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-container {
+                width: 100% !important;
+                max-width: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .page-break-before {
+                page-break-before: always;
+            }
+            .avoid-break {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Bovenbalk met branding (no-print) -->
+    <header class="bg-gradient-to-r from-brand-purple to-indigo-800 text-white shadow-lg no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-orange p-2.5 rounded-2xl shadow-md transform -rotate-3 hover:rotate-0 transition-transform">
+                    <i class="fa-solid fa-book-open-reader text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Don Bosco Zesde Leerjaar</h1>
+                    <p class="text-xs sm:text-sm text-purple-200 font-medium">Begrijpend Lezen — Fictie & Verhalen</p>
+                </div>
+            </div>
+
+            <!-- Modus Wisselaar & Printknop -->
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-900/60 p-1 rounded-xl flex items-center border border-purple-400/30">
+                    <button id="btnModeDigital" onclick="setMode('digital')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-brand-orange text-white shadow">
+                        <i class="fa-solid fa-laptop-code mr-1.5"></i> Digitaal Invullen
+                    </button>
+                    <button id="btnModePrint" onclick="setMode('print')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-purple-200 hover:text-white transition-all duration-200">
+                        <i class="fa-solid fa-print mr-1.5"></i> A4 Werkblad Modus
+                    </button>
+                </div>
+                <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i>
+                    <span class="hidden sm:inline">Afdrukken</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Besturingspaneel met Dropdowns (no-print) -->
+    <section class="bg-white border-b border-slate-200 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Dropdown 1: Genre / Onderwerp -->
+                <div>
+                    <label for="selectStory" class="block text-xs font-bold text-brand-purple uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-masks-theater text-brand-orange mr-1"></i> Verhaal / Thema
+                    </label>
+                    <select id="selectStory" onchange="updateContent()" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:border-brand-purple transition-all">
+                        <option value="vuurtoren">Het Geheim van de Verlaten Vuurtoren</option>
+                        <option value="uitvinding">De Verdwenen Uitvinding</option>
+                        <option value="woud">Schaduwen in het Woud</option>
+                        <option value="tijdreis">Een Tijdreis naar de Middeleeuwen</option>
+                        <option value="complot">Het Vreemde Complot</option>
+                    </select>
+                </div>
+
+                <!-- Dropdown 2: AVI-niveau -->
+                <div>
+                    <label for="selectAvi" class="block text-xs font-bold text-brand-purple uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-gauge-high text-brand-orange mr-1"></i> AVI-niveau
+                    </label>
+                    <select id="selectAvi" onchange="updateContent()" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:border-brand-purple transition-all">
+                        <option value="AVI E6">AVI E6</option>
+                        <option value="AVI M7">AVI M7</option>
+                        <option value="AVI E7">AVI E7</option>
+                        <option value="AVI Plus">AVI Plus</option>
+                    </select>
+                </div>
+
+                <!-- Dropdown 3: Moeilijkheidsgraad -->
+                <div>
+                    <label for="selectDifficulty" class="block text-xs font-bold text-brand-purple uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-graduation-cap text-brand-orange mr-1"></i> Moeilijkheidsgraad
+                    </label>
+                    <select id="selectDifficulty" onchange="updateContent()" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 focus:outline-none focus:border-brand-purple transition-all">
+                        <option value="Basis">Basis</option>
+                        <option value="Gemiddeld" selected>Gemiddeld</option>
+                        <option value="Moeilijk">Moeilijk</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /* Database met rijke fictieteksten & vragen per niveaus */
+        const storiesDatabase = {
+            vuurtoren: {
+                title: "Het Geheim van de Verlaten Vuurtoren",
+                theme: "Spanning & Mysterie",
+                avi: {
+                    "AVI E6": {
+                        text: [
+                            "Het waaide hard op de kliffen van Doornbaai. Lucas en Lina trokken hun jassen strak om zich heen. Aan het einde van het smalle rotspad stond de oude vuurtoren. Al twintig jaar brandde er geen licht meer. Toch had Lina gisteravond een geheimzinnige, rode gloed achter de hoge ramen gezien.",
+                            "‘We moeten voorzichtig zijn,’ fluisterde Lucas. Hij duwde tegen de zware eikenhouten deur. Met een hard gekraak zwaaide de deur open. Binnen rook het muf naar opgedroogd zeewier en oude boeken. Stofdeeltjes dwarrelden rond in het schrale zonlicht dat door de gebroken ruiten viel.",
+                            "Midden in de grote zaal leidde een gietijzeren wenteltrap naar boven. Terwijl ze de steile treden beklommen, hoorden ze plotseling een vreemd geluid. Tik... tik... tik. Het leek wel een geheime code! Lina hield haar adem in en greep Lucas’ arm vast. Wat verborg zich in de top van deze verlaten toren?"
+                        ]
+                    },
+                    "AVI M7": {
+                        text: [
+                            "De gure herfstwind huilde fel rond de kliffen van Doornbaai. Lucas en Lina baanden zich een weg over het gladde rotspad naar de oude, vervallen vuurtoren. De toren stond al decennia leeg en gold in het dorp als een spukende plek. Gisteravond had Lina echter vanuit haar slaapkamerraam een raadselachtige, rode gloed in de torenspits opgemerkt.",
+                            "‘Denk je echt dat er iemand woont?’ vroeg Lucas aarzelend. Hij duwde tegen de verweerde eikenhouten deur, die knarsend en piepend toegaf. De muffe lucht van opgedroogd zout water, oeroud pakhout en vochtige stenen kwam hun tegemoet. In het duister ontwaarden ze de contour van een imposante wenteltrap.",
+                            "Voorzichtig beklommen ze de verroeste treden. Boven hun hoofden weerklonk een ritmisch getik: kort, kort, lang, kort. ‘Het lijkt wel morsecode!’ fluisterde Lina met geballte vuisten. Met bonzend hart stappen ze het oude wachthuisje binnen, klaar om het raadsel te ontrafelen."
+                        ]
+                    },
+                    "AVI E7": {
+                        text: [
+                            "Een gure noordwesterstorm gespelde de steile kliffen van Doornbaai. Lucas en Lina trotseerden de snijdende wind op weg naar de vervallen vuurtoren, die als een eenzame wachter boven de woeste zee uitstak. Volgens de dorpslegende was de toren sinds de schipbreuk van 1984 verlaten. Toch had Lina de voorgaande nacht een opvallende, scharlakenrode lichtflits waargenomen vanuit de bovenste omgang.",
+                            "‘Hier stappen betekent geen weg terug,’ mompelde Lucas doordringend. Hij zette zijn schouder tegen de loodzware eiken deur. Met een doof gemor zwaaide de toegang open. Een bedompte geur van vergaan hout, zilter mufheid en eons oud stof omhulde hen onmiddellijk. Voor hen verhief zich een wenteltrap van gegoten ijzer, sierlijk doch zwaar aangetast door corrosie.",
+                            "Terwijl ze trede voor trede hoger stegen, weerklonk een dof, metalliek getik boven hun hoofden. Het patroon was opvallend regelmatig: pauze, dubbele tik, langgerekte schraap. Lina vatte de houten trapleuning steviger vast. De spanning was om te snijden toen ze de drempel van de lantaarnruimte overstaken..."
+                        ]
+                    },
+                    "AVI Plus": {
+                        text: [
+                            "Een onstuimige noordwesterstorm gierde meedogenloos langs de grillige rotswanden van Doornbaai. Lucas en Lina trotseerden de gure vlagen, vastberaden om de iconische doch in verval geraakte vuurtoren te inspecteren. Sinds het trShoctische nautische incident in de vorige eeuw stond de toren symbool voor vergeten historie. Echter, de raadselachtige scharlakenrode lichtimpuls die Lina afgelopen nacht observeerde, haalde alle lokale fabels onderuit.",
+                            "‘Laten we onze schreden bedachtzaam kiezen,’ waarschuwde Lucas met ingehouden adem. Hij oefende druk uit op de monumentale eikenhouten poort, die onder luid protest van de verroeste hengsels bezweek. Binnen heerste een claustrofobische atmosfeer, doordrenkt met de penetrante geur van geconcentreerd zeezout, salpeter en eeuwenoude decadentie. Een spiraalvormige gietijzeren trap slingerde als een gigantische wervelkolom omhoog.",
+                            "Tijdens hun gestage klim transformeerde het snijdende windgeruis in een staccato tikgeluid van metallieke oorsprong: eentonig, doordacht en onmiskenbaar intentioneel. Lina voelde een rilling over haar rug lopen; dit was geen speling van de natuur, maar een cryptische communicatie. Met ingehouden adem betraden zij de cabine van de lichtwachter..."
+                        ]
+                    }
+                },
+                questions: {
+                    literal: [
+                        { q: "Waar speelt dit verhaal zich precies af?", a: "Op de kliffen van Doornbaai bij een oude/verlaten vuurtoren." },
+                        { q: "Wat zag Lina gisteravond achter de hoge ramen van de vuurtoren?", a: "Een geheimzinnige / scharlakenrode lichtflits of rode gloed." },
+                        { q: "Hoe lang staat de vuurtoren al leeg/ongebruikt volgens de tekst?", a: "Al twintig jaar (of sinds de schipbreuk / vorige eeuw)." }
+                    ],
+                    interpretative: [
+                        { q: "Waarom hield Lina haar adem in tijdens het beklimmen van de trap?", a: "Ze was gespannen/bang vanwege het geheimzinnige getik en het mysterie in de toren." },
+                        { q: "Wat laat het 'ritmische getik' vermoeden over wat er boven is?", a: "Dat er iemand aanwezig is die een signaal (zoals morsecode) gebruikt of dat er een machine werkt." },
+                        { q: "Beschrijf het karakter van Lucas op basis van zijn acties in het verhaal.", a: "Lucas is dapper en nieuwsgierig, want hij duwt de zware deur open en loopt voorop." }
+                    ],
+                    vocabulary: [
+                        { q: "Wat betekent de uitdrukking 'De spanning was om te snijden'?", a: "Het was ontzettend spannend en geladen; iedereen voelde grote nervositeit." },
+                        { q: "Zoek een synonym in de tekst voor het woord 'muf' of geef de betekenis ervan.", a: "Oud, vochtig, niet fris ruikend (zoals bedompte lucht)." },
+                        { q: "Wat wordt bedoeld met 'geen weg terug hebben'?", a: "Een beslissing nemen waar je niet meer op kunt terugkomen; doorzetten met het avontuur." }
+                    ]
+                }
+            },
+            uitvinding: {
+                title: "De Verdwenen Uitvinding",
+                theme: "Avontuur & Wetenschap",
+                avi: {
+                    "AVI E6": {
+                        text: [
+                            "Professor Thomas werkte al jaren in zijn geheime kelderlab. Vandaag was de grote dag! Hij had de 'Chronoklik' afgemaakt: een klein, zilveren kastje waarmee je kapotte spullen terug in de tijd kon flitsen om ze nieuw te maken. Maar toen hij de laboratoriumdeur opende, schrok hij hevig.",
+                            "De Glazen vitrine op de werktafel was verbrijzeld. Het zilveren kastje was spoorloos verdwenen! Op de vloer lagen alleen een paar modderige voetstappen en een opvallende gele veer. Thomas pakte meteen zijn vergrootglas. 'Dit is de veer van een zeldzame papegaai,' mompelde hij stomverbaasd.",
+                            "Zijn jonge assistente Sophie kwam gehaast de trap af gestormd. 'Professor, ik zag net de zwarte bestelwagen van Riva wegrijden!' Riva was de grote rivaal van Thomas. Zonder twijfel wilde hij de Chronoklik stelen om er slapend rijk mee te worden. Thomas en Sophie twijfelden geen seconde en zetten de achtervolging in."
+                        ]
+                    },
+                    "AVI M7": {
+                        text: [
+                            "In de schemerige kelders van het uitvinderslaboratorium heerste spanning. Professor Thomas legde vol trots de laatste hand aan zijn levenswerk: de Chronoklik. Dit compacte zilveren apparaatje kon beschadigde objecten met behulp van chronogolven herstellen naar hun oorspronkelijke staat. Echter, toen hij na een korte koffiepauze terugkeerde, verstijfde hij van schrik.",
+                            "Het veiligheidsglas van de doos was met geweld ingeslagen en het apparaat was verdwenen. Op de houten vloer getuigden verse, drassige schoenafdrukken van een indringer. Tussen de glazen scherven schitterde een opvallende, felgele tropische veer. Thomas knielde neer en bestudeerde het spoor nauwkeurig.",
+                            "Assistent Sophie kwam ademloos binnenrennen. 'Professor! Er reed zojuist een zwarte bestelbus met afgeplakte kentekenplaten weg bij de poort!' Thomas balde zijn vuisten. Riva, zijn meedogenloze concurrent, had toegeslagen. 'Hij zal mijn vinding ontmantelen als we hem niet snel onderscheppen!' riep Thomas vastberaden."
+                        ]
+                    },
+                    "AVI E7": {
+                        text: [
+                            "Het laboratorium van professor Thomas leek normaal een oase van rust, maar vanmorgen hing er een ijzige stilte. Na jaren van meedogenloos experimenteren had hij eindelijk de Chronoklik geperfectioneerd — een technologisch hoogstandje dat moleculaire schade kon terugdraaien. Maar het triomfantelijke gevoel sloeg abrupt om in ontzetting toen Thomas zijn werkruimte betrad.",
+                            "De geharde vitrinekast lag in duizenden fonkelende splinters op de matronen houten vloer. Waar de Chronoklik had moeten pronken, heerste nu een leegte. Thomas’ oog viel op een rij drassige sporen die richting het venster leidden, vergezeld door een exotische scharlaken-gele veer. ‘Geen twijfel mogelijk,’ zei Thomas grimmig, ‘een Geelborst-ara.’",
+                            "Op dat moment stormde Sophie, zijn pientere assistente, de ruimte binnen. ‘Professor, de bewakingscamera’s zijn gehackt, maar ik zag Riva’s karakteristieke zwarte bestelwagen razendsnel wegstuiven!’ Riva schrok er niet voor terug om intellectueel eigendom te stelen. Een race tegen de klok was definitief ingezet."
+                        ]
+                    },
+                    "AVI Plus": {
+                        text: [
+                            "In het ondergrondse laboratorium van professor Thomas culminateden jaren van doorgedreven kwantummechanisch onderzoek in één baanbrekend prototype: de Chronoklik. Dit apparaat vermocht de entropie van materie lokaal om te keren. De euforie van de doorbraak werd echter wreed verstoord toen Thomas ontdekte dat het beveiligde compartiment meedogenloos gecorrumpeerd was.",
+                            "Het pantserglas lag vergruisd rondom de sokkel; het prototype was ontvreemd. Met analytische blik inventariseerde Thomas de plaats delict. Naast afwijkende profielsporen van modder ontwaarde hij een bijzondere biologische indicatie: een glanzende pen van een neotropische papegaaiensoort. Deze unieke veer fungeerde als een onweerlegbaar visitekaartje van zijn aartsrivaal.",
+                            "Sophie, de onmisbare assistente, vervoegde zich bij hem met verontrustende data. ‘Riva’s gestroomlijnde voertuig heeft zojuist de buitenperimeter doorbroken!’ Riva’s foute intenties om de technologie te monopoliseren en te gelde te maken lagen er duimendik op. Thomas en Sophie startten onmiddellijk hun nauwkeurig voorbereide tegenoffensief."
+                        ]
+                    }
+                },
+                questions: {
+                    literal: [
+                        { q: "Wat is de naam van de uitvinding van Professor Thomas?", a: "De Chronoklik." },
+                        { q: "Welke twee aanwijzingen/sporen liet de dief achter op de vloer?", a: "Modderige voetstappen/schoenafdrukken en een opvallende (gele/tropische) veer." },
+                        { q: "Wie is de verdachte die het apparaat vermoedelijk gestolen heeft?", a: "Riva (de rivaal/concurrent van professor Thomas)." }
+                    ],
+                    interpretative: [
+                        { q: "Waarom wilde Riva de Chronoklik volgens Thomas en Sophie stelen?", a: "Om er slapend rijk mee te worden / de technologie te monopoliseren en te verkopen." },
+                        { q: "Hoe reageerde Thomas toen hij ontdekte dat het glas verbrijzeld was?", a: "Hij schrok hevig, verstijfde van schrik en werd daarna vastberaden om het op te lossen." },
+                        { q: "Waarom is de gele veer een belangrijke aanwijzing in het verhaal?", a: "Omdat het wijst op een specifieke zeldzame papegaai die bij de dader (Riva) hoort." }
+                    ],
+                    vocabulary: [
+                        { q: "Wat betekent de uitdrukking 'Er slapend rijk mee worden'?", a: "Heel gemakkelijk en zonder veel moeite heel veel geld verdienen." },
+                        { q: "Wat betekent het als er 'een race tegen de klok' is ingezet?", a: "Dat er heel weinig tijd is en dat men heel snel moet handelen om iets te bereiken." },
+                        { q: "Geef een ander woord voor 'aartsrivaal' zoals gebruikt in de tekst.", a: "Grootste tegenstander, concurrent of vijand." }
+                    ]
+                }
+            },
+            woud: {
+                title: "Schaduwen in het Woud",
+                theme: "Natuur & Avontuur",
+                avi: {
+                    "AVI E6": {
+                        text: [
+                            "Het Fluisterbos deed zijn naam eer aan. Overal om Finn en Maya heen ritselden de bladeren in de avondwind. Ze waren op zoek naar het verdwenen wolvenjong dat 'Koda' heette. De boswachter had hen gewaarschuwd dat ze voor zonsondergang terug moesten zijn, maar het spoor van kleine pootafdrukken leidde dieper het donkere bos in.",
+                            "‘Kijk hier!’ riep Maya uit. Ze wees naar een gebroken tak aan een lage struik. Er hing een plukje grijze vacht aan. Finn knielde neer en keek op zijn kompas. ‘Als we deze beek volgen, komen we bij de Oude Rotsen. Wolven houden van droge hollen in de rotsen.’",
+                            "Plotseling klonk er een zacht, klaaglijk gegrom achter een dikke eikenboom. Maya en Finn hielden stil. In de schaduw van de boom zagen ze twee glimmende oogjes. Finn stak langzaam zijn hand uit en sprak met een rustige stem. Was dit de kleine Koda, of wachtte er een gevaarlijk roofdier in het duister?"
+                        ]
+                    },
+                    "AVI M7": {
+                        text: [
+                            "Het dichte bladerdak van het Fluisterbos liet nog maar amper daglicht door. Finn en Maya trokken geconcentreerd door de dichtbegroeide ondergroei, spoorzoekend naar Koda, het verdwaalde wolvenwelpje. Hoewel de boswachter hen dringend had verzocht voor de inval van de nacht terug te keren, konden ze het jonge dier niet aan zijn lot overlaten.",
+                            "‘Hier zijn meer sporen!’ fluisterde Maya opgewonden. Ze wees op een serie prenten in de vochtige mosbodem, versierd met een plukje grijze donsvacht aan de bramenstruiken. Finn raadpleegde zijn topografische kaart. ‘De beek stroomt richting de kalksteenholtes bij de Zwarte Rotsen. Dat is de ideale schuilplaats.’",
+                            "Net toen de schemering definitief inzette, weerklonk er een hels geritsel, gevolgd door een smachtend gejank. Tussen de wrakke wortels van een eeuwenoude eik lichtten twee amberkleurige ogen op. Finn maande Maya tot absolute stilte. Met ingehouden adem zette hij voorzichtig een stap naderbij."
+                        ]
+                    },
+                    "AVI E7": {
+                        text: [
+                            "Een deken van schemering daalde neer over het ondoordringbare Fluisterbos. Finn en Maya baanden zich stug een weg door het struikgewas, gedreven door de missie om Koda — het vermiste wolvenjong — te lokaliseren. De dringende appèls van de boswachter om het reservaat voor het duister te verlaten, verdwenen naar de achtergrond bij de gedachte aan de hulpeloze welp.",
+                            "‘Zijn spoor intensiveert hier,’ merkte Maya scherpzinnig op. Ze doceerde over de pootafdrukken in het zompige mos en ontwaarde plukjes stugge ondervacht aan de doornen. Finn analyseerde de hoogtelijnen op zijn kaart. ‘Het meanderende beekje leidt rechtstreeks naar de kalksteenformaties, de aangewezen beschutting tegen nachtelijke predatoren.’",
+                            "Onverwachts stokte hun ademhaling toen een laag, schor gejank de duisternis doorsneed. In de holte onder een imposante eik glommen twee amberkleurige pupillen op. De Schaduwen van het bos leken samen te trekken. Finn hief matig zijn handen om neutraliteit uit te stralen. Het cruciale moment van de ontmoeting was aangebroken."
+                        ]
+                    },
+                    "AVI Plus": {
+                        text: [
+                            "De doordringende schemering transformeerde het robuuste Fluisterbos tot een mystiek decor van langgerekte silhouetten. Finn en Maya persisteerden in hun uitdagende zoektocht naar Koda, het juveniele wolvenexemplaar dat van de roedel geïsoleerd geraakt was. De directieven van de boswachter inzake het strikte avondcurfews wijkten voor hun morele plicht t.o.v. het kwetsbare dier.",
+                            "‘De fysiologische sporen zijn overduidelijk,’ constateerde Maya analytisch. Ze situeerde afdrukken in het vochtige substraat en zette de botanische obstakels op zij. Finn consulteerde zijn kompas. ‘De beekbedding vormt een natuurlijke gids naar de geologische rotsformaties, welke historisch dienen als schuilholtes.’",
+                            "Een dof, resonant geluid onderbrak hun tactische overleg; een mix van vrees en lichte fysieke nood weerklonk vanuit de wortelstructuur van een gigantische eikenboom. Twee oplichtende irissen doorbraken de duisternis. Finn maande tot een staat van absolute sereniteit. Elke verkeerde beweging kon de delicate balans verstoren..."
+                        ]
+                    }
+                },
+                questions: {
+                    literal: [
+                        { q: "Naar wie zijn Finn en Maya op zoek in het bos?", a: "Naar Koda, het verdwaalde wolvenjong / wolvenwelpje." },
+                        { q: "Wat had de boswachter hen uitdrukkelijk gewaarschuwd?", a: "Dat ze voor zonsondergang / voor het invallen van de nacht terug moesten zijn." },
+                        { q: "Welke schuilplaats vermoedt Finn op basis van zijn kaart/kompas?", a: "De rotsen/kalksteenholtes bij de beek." }
+                    ],
+                    interpretative: [
+                        { q: "Waarom negeerden Finn en Maya de waarschuwing van de boswachter?", a: "Ze wilden het arme wolvenjong niet alleen laten in het donkere bos / ze voelden een plicht om het te redden." },
+                        { q: "Waarom reageerde Finn met een rustige stem en open handen toen hij de ogen zag?", a: "Om het dier niet te laten schrikken en te laten zien dat ze geen gevaar vormden." },
+                        { q: "Hoe verandert de sfeer in het bos naarmate het verhaal vordert?", a: "Het wordt donkerder, spannender en mystieker met meer schaduwen en geluiden." }
+                    ],
+                    vocabulary: [
+                        { q: "Wat betekent de naam van het bos ('Fluisterbos deed zijn naam eer aan')?", a: "Dat het bos echt leek te fluisteren door het geritsel van de bladeren in de wind." },
+                        { q: "Wat betekent het woord 'ondergroei' of 'substraat' in de context van een bos?", a: "Lage planten, struiken en de begroeiing/bodem onder de hoge bomen." },
+                        { q: "Wat betekent 'iemand niet aan zijn lot overlaten'?", a: "Iemand die in moeilijkheden zit helpen en niet alleen laten met zijn problemen." }
+                    ]
+                }
+            },
+            tijdreis: {
+                title: "Een Tijdreis naar de Middeleeuwen",
+                theme: "Fantasie & Historie",
+                avi: {
+                    "AVI E6": {
+                        text: [
+                            "Op de stoffige zolder van het museum vond Lars een oude koperen zandloper. Toen hij de zandloper omdraaide om het stof eraf te blazen, begon de lucht om hem heen te trillen. Een fel blauw licht vulde de kamer. Lars sloot zijn ogen. Toen hij ze weer opende, stond hij niet meer op zolder, maar midden op een druk marktplein!",
+                            "Overal om hem heen liepen mensen in vreemde, wollen kleren. Kooplui schreeuwden hun waren uit: vers gebakken brood, gerookte vis en grote houten vaten met cider. In de verte rees een machtig steen kasteel op met rode vaandels die wapperden in de wind. Lars keek naar zijn eigen spijkerbroek. Iedereen staarde hem verbaasd aan.",
+                            "‘Halt daar, vreemdeling!’ klonk een zware stem. Een schildwacht met een glimmend harnas en een lange speer stapte op hem af. Lars voelde een koud zweet opkomen. Waar was de koperen zandloper gebleven? Die had hij nodig om weer veilig naar zijn eigen tijd terug te keren!"
+                        ]
+                    },
+                    "AVI M7": {
+                        text: [
+                            "Tijdens het opruimen van de museumzolder stuitte Lars op een bijzonder artifact: een antieke koperen zandloper gegraveerd met geheimzinnige runen. Zodra hij het glas schoonveegde en de zandloper kantelde, ontstond er een energetische wervelstorm. De ruimte vervaagde en het geluid van wielen op kasseien drong zijn oren binnen.",
+                            "Wanneer de nevel optrok, bevond Lars zich op een middeleeuwse markt. De geur van gebakken gans, nat stro en paardenmest kwam hem tegemoet. Kooplieden prezen luidkeels hun houten ambachtswaren aan onder de schaduw van een gigantische burcht. Lars' moderne kleding vloekte immens met de eenvoudige linnen tunieken van de omstanders.",
+                            "‘Geef rekenschap van uw afkomst!’ bulderde een gewapende lijfwacht, die met gestrekte lans naderbij kwam. Lars greep instinctief naar zijn zakken. De zandloper was tijdens de tijdsprong uit zijn handen geglipt. Zonder dit magische object zat hij voorgoed gevangen in de veertiende eeuw!"
+                        ]
+                    },
+                    "AVI E7": {
+                        text: [
+                            "Op het verstoffeerde archief van het historisch museum ontdekte Lars een zeldzaam relic: een bronzen chronometer in de gedaante van een zandloper. Zodra hij het mechanisme activeerde, transformeerde de realiteit in een duizelingwekkende lichtflits. Met een harde smak belandde hij op harde kasseistenen midden in een bruisende middeleeuwse nederzetting.",
+                            "De zintuiglijke indrukken overspoelden hem: marktkooplieden die luidkeels pluimvee verhandelden, gildebroeders in grove wollen pijen en de imposante silhouet van een ommuurde citadel. Lars’ eigentijdse kledij roep alom achterdocht op bij de bevolking. Vragende en argwanende blikken werden zijn deel.",
+                            "‘Houd de spion tegen!’ commandeerde de kapitein van de stadswacht, gestoken in een glanzend Maliënkolder. Lars doorzocht koortsachtig de omgeving. De bronzen zandloper lag meters verderop, vlak bij de hoeven van een steigerend paard. Tijd om te twijfelen was er niet; hij moest een meesterplan bedenken."
+                        ]
+                    },
+                    "AVI Plus": {
+                        text: [
+                            "In het schemerige depot van de museumafdeling antiquiteiten stuitte Lars op een geheimzinnig object: een renaissancistische chronometer vervaardigd uit brons en kristal. Bij rotatie van het instrument voltrok zich een fysieke anomalie; de continuïteit van tijd en ruimte werd ontwricht. Binnen een fractie van een seconde werd Lars verplaatst naar een veertiende-eeuwse marktplaats.",
+                            "Het decor was bevreemdend doch historisch authentiek: de Penetrant geur van gisting, ambachtslieden die robuuste waren veilden, en op de achtergrond de dominante vesting met kantelen en weergangen. Lars’ anachronistische verschijning in spijkerbroek en sneakers choqueerde de lokale bevolking, die hem met groeiend wantrouwen gade sloeg.",
+                            "‘In naam van de hertog, arrestere deze indringer!’ echode het commando van een geharnaste wachtcommandant. Lars’ adrenaline schoot omhoog toen hij constateerde dat het tijdsartefact tijdens de transitie gedesoriënteerd op de kasseien beland was. Eén misstap kon zijn terugkeer naar de eenentwintigste eeuw voorgoed verijdelen."
+                        ]
+                    }
+                },
+                questions: {
+                    literal: [
+                        { q: "Welk voorwerp zorgde ervoor dat Lars naar het verleden reisde?", a: "Een oude koperen/bronzen zandloper (chronometer)." },
+                        { q: "Waar belandde Lars direct na de tijdreis?", a: "Midden op een drukke middeleeuwse markt / marktplein." },
+                        { q: "Wie sprak Lars streng toe zodra hij op de markt stond?", a: "Een schildwacht / kapitein van de stadswacht." }
+                    ],
+                    interpretative: [
+                        { q: "Waarom staarden de mensen op de markt Lars zo verbaasd aan?", a: "Omdat zijn moderne kleding (spijkerbroek, sneakers) heel raar was in de middeleeuwen." },
+                        { q: "Waarom panikeerde Lars toen hij ontdekte dat de zandloper weg was?", a: "Omdat hij de zandloper nodig had om weer terug naar zijn eigen tijd te reizen." },
+                        { q: "Wat voor sfeer heerst er op de middeleeuwse markt volgens de beschrijving?", a: "Druk, levendig, chaotisch en vol sterke geuren en roepende mensen." }
+                    ],
+                    vocabulary: [
+                        { q: "Wat betekent het woord 'anachronistisch' of 'vloeken met de omgeving'?", a: "Niet passend in die tijd; iets wat niet hoort bij de historische periode." },
+                        { q: "Wat wordt bedoeld met de uitdrukking 'Koud zweet voelen opkomen'?", a: "Heel erg schrikken of heel bang/zenuwachtig worden." },
+                        { q: "Wat is een 'citadel' of 'burcht'?", a: "Een groot steen kasteel of versterkte middeleeuwse vesting." }
+                    ]
+                }
+            },
+            complot: {
+                title: "Het Vreemde Complot",
+                theme: "Spanning & Vriendschap",
+                avi: {
+                    "AVI E6": {
+                        text: [
+                            "Mila en Noah zaten op de houten schommel in het dorpspark. Het was al laat in de middag en de schaduwen werden langer. Vlak bij het oude houten bankje zagen ze twee mannen in zwarte jassen staan. Ze sproken met gedempte stemmen en keken steeds zenuwachtig om zich heen.",
+                            "‘Vertrouw je dit?’ fluisterde Mila. Ze dook weg achter de grote struik. Noah schudde zijn hoofd. Eén van de mannen liet per ongeluk een opgevouwen plattegrond vallen. Toen de mannen haastig wegliepen richting de stadsbibliotheek, sloop Noah er snel naartoe en raapte het papier op.",
+                            "Op de kaart stond een rood kruis bij de kluis van het dorpsmuseum, met een tijdstip erbij: vanavond om stipt acht uur! Mila en Noah keken elkaar met grote ogen aan. Ze hadden nog maar twee uur om het complot te stoppen. Wat moesten ze doen? Naar de politie gaan of zelf op onderzoek uit?"
+                        ]
+                    },
+                    "AVI M7": {
+                        text: [
+                            "Het dorpspark van Eikenburg lag er verlaten bij toen de avond viel. Mila en Noah genoten van de rust, totdat twee schimmige figuren bij de grote eik hun aandacht trokken. De mannen droegen donkere mantels, hoeden die diep over hun ogen getrokken waren en wisselden op geheimzinnige toon documenten uit.",
+                            "‘Dit riekt naar problemen,’ mompelde Noah scherp. Dankzij de schaduwen van de struiken konden ze onopgemerkt dichterbij sluipen. Een van de onbekenden haalde een gedetailleerde blauwdruk tevoorschijn, maar door een plotse windvlaag glipte een bijbehorend notitieblad uit zijn handen en waaide richting de vijver.",
+                            "Zodra het mysterieuze duo gehaast verdween, haalde Mila het document uit het gras. Het bleek een getekende route door het ventilatiesysteem van het historisch museum te zijn, met de tekst: ‘Operatie Kunstschat - 20:00 uur’. De twee vrienden beseften dat ze de sleutel tot een grote misdaad in handen hadden."
+                        ]
+                    },
+                    "AVI E7": {
+                        text: [
+                            "In de inval van de schemering transformeerde het schilderachtige dorpspark tot een schuilplaats voor geheimzinnige ontmoetingen. Mila en Noah observeerden vanaf een discrete afstand twee lieden die zich verdacht ophielden bij het paviljoen. Hun gefluister was gejaagd en hun lichaamstaal verraadde grote nervositeit.",
+                            "‘Geen enkele burger gedraagt zich zo discreet zonder kwade bedoelingen,’ fluisterde Mila vastberaden. Een van de individuen ontvouwde een technische schets van een beveiligingssysteem. Een onverwachte windstoot blies een cruciaal bijlageblad weg. Zonder dat de mannen het opmerkten, belandde het papier in het gazon.",
+                            "Noah heroverde het document zodra het terrein veilig was. De aantekeningen lieten geen twijfel bestaan: een minutieus voorbereide inbraak in de kluis van de dorpsstichting stond gepland voor precies acht uur ’s avonds. De vriendschap en moed van de tieners werden op de proef gesteld: luidden ze de noodklok of ondernamen ze zelf actie?"
+                        ]
+                    },
+                    "AVI Plus": {
+                        text: [
+                            "Tijdens het intreden van de avondschemering werd het park het decor van een verontrustend schouwspel. Mila en Noah taxeerden met scherpe blik twee onbekende individuen wier covert gedrag onmiddellijk achterdocht wekte. Hun interactie kenmerkte zich door gecodeerde taal en voortdurende waakzaamheid t.o.v. de omgeving.",
+                            "‘Dit duidt onmiskenbaar op een illegaal complot,’ analyseerde Mila ijskoud. De verdachten hanteerden een gedetailleerd schema van een institutionele kluisruimte. Door een meteorologische speling van de natuur — een plotselinge valwind — scheidde een vlugschrift zich van het dossier en toucheerde de ondergrond.",
+                            "Noah stelde het bewijsmateriaal veilig nadat de verdachten het park verlaten hadden. Het cartografische document bevatte een stappenplan voor een op handen zijnde ontvreemding van onvervangbaar erfgoed. Met nog krap twee uur op de klok stonden de jongeren voor een ethisch dilemma van formaat."
+                        ]
+                    }
+                },
+                questions: {
+                    literal: [
+                        { q: "Waar waren Mila en Noah toen ze de verdachte mannen zagen?", a: "In het (dorps)park." },
+                        { q: "Wat lieten de mannen per ongeluk vallen?", a: "Een opgevouwen plattegrond / blauwdruk / notitieblad." },
+                        { q: "Om hoe laat zou de inbraak/misdaad plaatsvinden?", a: "Om stipt acht uur 's avonds (20:00 uur)." }
+                    ],
+                    interpretative: [
+                        { q: "Waaraan merkten Mila en Noah dat de mannen iets slechts van plan waren?", a: "Ze fluisterden, keken zenuwachtig om zich heen en droegen donkere kleding." },
+                        { q: "Voor welk belangrijk dilemma staan Mila en Noah aan het einde?", a: "Of ze meteen naar de politie moeten gaan of zelf op onderzoek uit moeten gaan." },
+                        { q: "Wat zegt dit avontuur over de vriendschap tussen Mila en Noah?", a: "Dat ze een goed team zijn, elkaar vertrouwen en samen dapper durven op te treden." }
+                    ],
+                    vocabulary: [
+                        { q: "Wat betekent het woord 'complot'?", a: "Een geheim plan van een groep mensen om iets illegaals of meedogenloos te doen." },
+                        { q: "Wat betekent de uitdrukking 'De noodklok luiden'?", a: "Iedereen waarschuwen voor een groot dreigend gevaar." },
+                        { q: "Wat betekent het als iemand zich 'discreet' of 'covert' gedraagt?", a: "Onopvallend, geheimzinnig en zonder de aandacht te trekken." }
+                    ]
+                }
+            }
+        };
+
+        // Globale toestand van de app
+        let currentStoryKey = 'vuurtoren';
+        let currentAvi = 'AVI M7';
+        let currentDifficulty = 'Gemiddeld';
+        let currentMode = 'digital'; // 'digital' of 'print'
+
+        // Functie om de inhoud bij te werken
+        function updateContent() {
+            currentStoryKey = document.getElementById('selectStory').value;
+            currentAvi = document.getElementById('selectAvi').value;
+            currentDifficulty = document.getElementById('selectDifficulty').value;
+
+            const storyData = storiesDatabase[currentStoryKey];
+            const textData = storyData.avi[currentAvi] || storyData.avi["AVI M7"];
+
+            // Update Titel & Thema
+            document.getElementById('displayTitle').innerText = storyData.title;
+            document.getElementById('displaySub').innerText = `Thema: ${storyData.theme} | ${currentAvi} | Niveau: ${currentDifficulty}`;
+            
+            // Print Headers Updates
+            document.getElementById('printTitle').innerText = storyData.title;
+            document.getElementById('printMeta').innerText = `Begrijpend Lezen Fictie • ${currentAvi} • Niveau ${currentDifficulty}`;
+
+            // Render Verhaaltekst
+            const textContainer = document.getElementById('storyTextContainer');
+            const printTextContainer = document.getElementById('printStoryTextContainer');
+            
+            let paragraphsHTML = "";
+            textData.text.forEach((paragraph, idx) => {
+                paragraphsHTML += `<p class="mb-3.5 leading-relaxed text-slate-700 text-justify text-sm sm:text-base">${paragraph}</p>`;
+            });
+
+            textContainer.innerHTML = paragraphsHTML;
+            printTextContainer.innerHTML = paragraphsHTML;
+
+            // Render Vragen
+            renderQuestions(storyData.questions);
+        }
+
+        // Functie voor het renderen van alle vragen (Digitaal + Print)
+        function renderQuestions(questionsData) {
+            const digitalContainer = document.getElementById('digitalQuestionsContainer');
+            const printContainer = document.getElementById('printQuestionsContainer');
+            const keyContainer = document.getElementById('correctionKeyContainer');
+
+            let digitalHTML = "";
+            let printHTML = "";
+            let keyHTML = "";
+
+            const categories = [
+                { id: 'literal', title: '🔍 Letterlijke Zoekvragen', items: questionsData.literal, color: 'border-blue-500 text-blue-700' },
+                { id: 'interpretative', title: '💡 Interpretatie & Inzicht', items: questionsData.interpretative, color: 'border-purple-500 text-purple-700' },
+                { id: 'vocabulary', title: '📖 Woordenschat & Uitdrukkingen', items: questionsData.vocabulary, color: 'border-amber-500 text-amber-700' }
+            ];
+
+            let globalQIndex = 1;
+
+            categories.forEach(cat => {
+                // Digitaal Block
+                digitalHTML += `
+                    <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border-l-4 ${cat.color} mb-5">
+                        <h3 class="font-bold text-base sm:text-lg mb-3 flex items-center gap-2">${cat.title}</h3>
+                        <div class="space-y-4">
+                `;
+
+                // Print Block
+                printHTML += `
+                    <div class="mb-4 avoid-break">
+                        <h4 class="font-bold text-xs sm:text-sm text-brand-purple uppercase tracking-wider mb-2 border-b pb-1 border-slate-300 flex items-center gap-1.5">
+                            ${cat.title}
+                        </h4>
+                        <div class="space-y-3">
+                `;
+
+                // Correctiesleutel Block
+                keyHTML += `
+                    <div class="mb-3">
+                        <h5 class="font-bold text-xs text-brand-purple">${cat.title}</h5>
+                        <ul class="list-disc pl-4 text-xs text-slate-600 space-y-1 mt-1">
+                `;
+
+                cat.items.forEach((qItem) => {
+                    const qId = `q_${globalQIndex}`;
+
+                    // Digitaal
+                    digitalHTML += `
+                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            <label for="${qId}" class="block text-xs sm:text-sm font-bold text-slate-800 mb-1.5">
+                                ${globalQIndex}. ${qItem.q}
+                            </label>
+                            <textarea id="${qId}" rows="2" placeholder="Typ hier jouw antwoord..." class="w-full p-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-purple focus:outline-none transition-all"></textarea>
+                            <div id="feedback_${qId}" class="hidden mt-2 p-2.5 rounded-lg text-xs bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                <strong><i class="fa-solid fa-circle-check mr-1"></i> Voorbeeldantwoord:</strong> ${qItem.a}
+                            </div>
+                        </div>
+                    `;
+
+                    // Print (Met mooie schrijflijntjes)
+                    printHTML += `
+                        <div class="text-xs avoid-break">
+                            <p class="font-bold text-slate-800 mb-1">${globalQIndex}. ${qItem.q}</p>
+                            <span class="writing-line"></span>
+                            <span class="writing-line"></span>
+                        </div>
+                    `;
+
+                    // Sleutel
+                    keyHTML += `
+                        <li><strong>Vraag ${globalQIndex}:</strong> ${qItem.a}</li>
+                    `;
+
+                    globalQIndex++;
+                });
+
+                digitalHTML += `</div></div>`;
+                printHTML += `</div></div>`;
+                keyHTML += `</ul></div>`;
+            });
+
+            digitalContainer.innerHTML = digitalHTML;
+            printContainer.innerHTML = printHTML;
+            keyContainer.innerHTML = keyHTML;
+        }
+
+        // Wisselen van Modus (Digitaal / Print)
+        function setMode(mode) {
+            currentMode = mode;
+            const digitalView = document.getElementById('digitalView');
+            const printView = document.getElementById('printView');
+            const btnDigital = document.getElementById('btnModeDigital');
+            const btnPrint = document.getElementById('btnModePrint');
+
+            if (mode === 'digital') {
+                digitalView.classList.remove('hidden');
+                printView.classList.add('hidden');
+                btnDigital.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-brand-orange text-white shadow";
+                btnPrint.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-purple-200 hover:text-white transition-all duration-200";
+            } else {
+                digitalView.classList.add('hidden');
+                printView.classList.remove('hidden');
+                btnPrint.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-brand-orange text-white shadow";
+                btnDigital.className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-purple-200 hover:text-white transition-all duration-200";
+            }
+        }
+
+        // Nakijken digitale antwoorden
+        function checkAnswers() {
+            let count = 1;
+            while (document.getElementById(`q_${count}`)) {
+                const feedbackEl = document.getElementById(`feedback_q_${count}`);
+                if (feedbackEl) {
+                    feedbackEl.classList.remove('hidden');
+                }
+                count++;
+            }
+            // Toon succes bericht bovenaan
+            const statusBox = document.getElementById('statusBox');
+            statusBox.classList.remove('hidden');
+            statusBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset antwoorden
+        function resetAnswers() {
+            let count = 1;
+            while (document.getElementById(`q_${count}`)) {
+                const inputEl = document.getElementById(`q_${count}`);
+                const feedbackEl = document.getElementById(`feedback_q_${count}`);
+                if (inputEl) inputEl.value = "";
+                if (feedbackEl) feedbackEl.classList.add('hidden');
+                count++;
+            }
+            document.getElementById('statusBox').classList.add('hidden');
+        }
+
+        // Toggle Sleutel op scherm
+        function toggleKey() {
+            const keyEl = document.getElementById('correctionKeySection');
+            keyEl.classList.toggle('hidden');
+        }
+    </script>
+
+    <!-- HOOFDCONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
+
+        <!-- ==================== DIGITALE MODUS ==================== -->
+        <div id="digitalView" class="space-y-6">
+
+            <!-- Statusscherm na nakijken -->
+            <div id="statusBox" class="hidden bg-emerald-100 border-2 border-emerald-400 text-emerald-900 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-2xl text-emerald-600"></i>
+                    <div>
+                        <h4 class="font-bold text-sm sm:text-base">Goed gewerkt!</h4>
+                        <p class="text-xs sm:text-sm">Vergelijk jouw geschreven antwoorden met de groene voorbeeldantwoorden bij elke vraag.</p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('statusBox').classList.add('hidden')" class="text-emerald-700 hover:text-emerald-900 font-bold text-lg">
+                    &times;
+                </button>
+            </div>
+
+            <!-- Tweekoloms Layout: Links Verhaal / Rechts Vragen -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Kolom Links: Het Verhaal (5/12 of 6/12) -->
+                <div class="lg:col-span-6 bg-white p-6 sm:p-7 rounded-3xl shadow-sm border border-slate-200 sticky top-24">
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+                        <span class="bg-brand-orangeLight text-brand-orange px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-book-bookmark mr-1"></i> Lees-Tekst
+                        </span>
+                        <span id="displaySub" class="text-xs font-medium text-slate-500"></span>
+                    </div>
+
+                    <h2 id="displayTitle" class="text-2xl sm:text-3xl font-bold text-brand-purple mb-4"></h2>
+                    
+                    <!-- De Verhaaltekst -->
+                    <div id="storyTextContainer" class="prose max-w-none text-slate-700"></div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                        <span><i class="fa-solid fa-school mr-1"></i> Don Bosco Zesde Leerjaar</span>
+                        <span><i class="fa-solid fa-font mr-1"></i> Fictie & Begrijpend Lezen</span>
+                    </div>
+                </div>
+
+                <!-- Kolom Rechts: Vragen & Invulvelden (6/12) -->
+                <div class="lg:col-span-6 space-y-4">
+                    
+                    <div class="flex items-center justify-between bg-purple-50 p-4 rounded-2xl border border-purple-100">
+                        <div>
+                            <h3 class="font-bold text-brand-purple text-base">Vragen & Opdrachten</h3>
+                            <p class="text-xs text-purple-600">Beantwoord de vragen op basis van het verhaal.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="resetAnswers()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition-all">
+                                <i class="fa-solid fa-rotate-left mr-1"></i> Wis
+                            </button>
+                            <button onclick="checkAnswers()" class="px-4 py-1.5 bg-brand-orange hover:bg-orange-600 text-white text-xs font-bold rounded-xl shadow-md transition-all">
+                                <i class="fa-solid fa-check mr-1"></i> Kijk Na
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vragen dynamisch gegenereerd -->
+                    <div id="digitalQuestionsContainer"></div>
+
+                    <!-- Knoppen onderaan -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200">
+                        <button onclick="toggleKey()" class="text-xs font-bold text-brand-purple hover:underline flex items-center gap-1.5">
+                            <i class="fa-solid fa-key text-brand-orange"></i> Toon/Verberg Correctiesleutel op Scherm
+                        </button>
+                        <button onclick="checkAnswers()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm rounded-xl shadow-md transition-all">
+                            <i class="fa-solid fa-circle-check mr-1.5"></i> Antwoorden Controleren
+                        </button>
+                    </div>
+
+                    <!-- Uitklapbare Correctiesleutel -->
+                    <div id="correctionKeySection" class="hidden bg-slate-800 text-white p-5 rounded-2xl shadow-lg border border-slate-700">
+                        <h4 class="font-bold text-brand-orange text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-check"></i> Correctiesleutel
+                        </h4>
+                        <div id="correctionKeyContainer" class="space-y-3"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== AFDRUKBARE MODUS (A4) ==================== -->
+        <div id="printView" class="hidden print-container max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
+            
+            <!-- A4 Kopzeef / Hoofding voor de leerling -->
+            <div class="border-b-2 border-brand-purple pb-4 mb-5 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-brand-purple text-white p-2.5 rounded-xl font-bold text-xl">
+                        DB6
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-brand-purple uppercase tracking-tight">Don Bosco Zesde Leerjaar</h1>
+                        <p class="text-xs text-slate-500 font-semibold" id="printMeta">Begrijpend Lezen Fictie</p>
+                    </div>
+                </div>
+
+                <!-- Invulvakjes Leerling -->
+                <div class="grid grid-cols-3 gap-3 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200 w-full sm:w-auto">
+                    <div>
+                        <span class="block font-bold text-slate-400 uppercase text-[9px]">Naam</span>
+                        <span class="font-semibold text-slate-700">..................................</span>
+                    </div>
+                    <div>
+                        <span class="block font-bold text-slate-400 uppercase text-[9px]">Klas</span>
+                        <span class="font-semibold text-slate-700">6 ......</span>
+                    </div>
+                    <div>
+                        <span class="block font-bold text-slate-400 uppercase text-[9px]">Datum</span>
+                        <span class="font-semibold text-slate-700">.... / .... / 20....</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tweekoloms Print Layout (A4 Optimaal) -->
+            <div class="grid grid-cols-2 gap-6 text-slate-800">
+                
+                <!-- Kolom 1: Tekst -->
+                <div class="pr-2 border-r border-slate-200">
+                    <h2 id="printTitle" class="text-lg font-bold text-brand-purple mb-3"></h2>
+                    <div id="printStoryTextContainer" class="text-xs leading-relaxed text-justify space-y-2.5"></div>
+                </div>
+
+                <!-- Kolom 2: Vragen met Schrijflijnen -->
+                <div id="printQuestionsContainer" class="pl-2"></div>
+
+            </div>
+
+            <!-- Footer van de Printpagina -->
+            <div class="mt-6 pt-3 border-t border-slate-200 text-[10px] text-slate-400 flex justify-between items-center">
+                <span> Don Bosco Zesde Leerjaar - Werkblad Begrijpend Lezen (Fictie)</span>
+                <span>Pagina 1 van 1</span>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer (no-print) -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>© Don Bosco Zesde Leerjaar — Begrijpend Lezen Fictie & Verhalen-Generator</p>
+        </div>
+    </footer>
+
+    <!-- Initialisatie Script -->
+    <script>
+        window.onload = function() {
+            updateContent();
+        };
+    </script>
+</body>
+</html>
